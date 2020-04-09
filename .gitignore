@@ -30,11 +30,14 @@ Icon
 trained_models/
 calculations/
 graphs/
+MNIST_data/
+MNIST/
 
 # Jupyter checkpoints
 .ipynb_checkpoints
 
 # Dump Files
+*.zip
 *.bz2
 
 # Files that might appear in the root of a volume
