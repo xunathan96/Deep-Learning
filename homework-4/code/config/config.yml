@@ -1,0 +1,40 @@
+device: 'cpu'
+
+seed: False
+
+data:
+    mnist:
+        train:
+            path: './data/'
+
+        valid:
+            path: ''
+
+        test:
+            path: './data/'
+
+        batch_size: 100
+
+model:
+    # specify which architecture to use
+    name: 'mlp'
+    path: './cache/'
+    mlp:
+        hidden_layer_dim_1: 456
+        hidden_layer_dim_2: 128
+
+    cnn:
+        n_channels_1: 8
+        n_channels_2: 16
+        hidden_layer_dim: 128
+        kernel_size: 5
+
+
+optimizer:
+    name: 'sgd'
+    epochs: 10
+    params:
+        lr: 0.001
+        momentum: 0.9
+        regularization: 0.005
+
