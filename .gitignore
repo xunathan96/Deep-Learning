@@ -32,6 +32,7 @@ calculations/
 graphs/
 MNIST_data/
 MNIST/
+cache/
 
 # Jupyter checkpoints
 .ipynb_checkpoints
