@@ -33,6 +33,7 @@ graphs/
 MNIST_data/
 MNIST/
 cache/
+.data/
 
 # Jupyter checkpoints
 .ipynb_checkpoints
@@ -40,6 +41,7 @@ cache/
 # Dump Files
 *.zip
 *.bz2
+*.pt
 
 # Files that might appear in the root of a volume
 .DocumentRevisions-V100
