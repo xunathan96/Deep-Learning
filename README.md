@@ -11,3 +11,5 @@ Homework 2 -- MNIST Classification with MLP & Softmax
 Homework 3 -- MNIST Classification with ConvNet
 
 Homework 4 -- MNIST Classification on PyTorch
+
+Homework 5 -- Sentence-level Sentiment Classification
