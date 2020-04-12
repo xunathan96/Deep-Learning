@@ -1,0 +1,33 @@
+device: 'cpu'
+
+seed: False
+
+data:
+    dir: './data/'
+    train:
+        path: './data/'
+
+    valid:
+        path: './data/'
+
+    test:
+        path: './data/'
+
+    batch_size: 64
+    embedding_size: 300
+
+model:
+    name: 'lstm'
+    path: './cache/'
+    hidden_dim: 256
+    n_layers: 2
+    dropout: 0.5
+    bidirectional: True
+
+optimizer:
+    name: 'adam'
+    epochs: 3
+    params:
+        lr: 0.001
+        regularization: 0.000
+
