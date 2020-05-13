@@ -1,0 +1,19 @@
+device: 'cpu'
+
+seed: False
+
+data:
+    path: './data/iris.data'
+
+model:
+    name: 'gmm'
+    path: './cache/'
+    n_clusters: 3
+
+optimizer:
+    name: 'adam'
+    epochs: 3
+    params:
+        lr: 0.001
+        regularization: 0.000
+
