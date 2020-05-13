@@ -25,7 +25,7 @@ def train(config):
 
 	gmm = GaussianMixtureModel(config, data)
 
-	gmm.calculate_responsibilities(data.X, 0, 0)
+	gmm.mahalanobis_distance(data.X, 0, 0)
 
 
 
