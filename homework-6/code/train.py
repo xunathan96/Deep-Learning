@@ -24,34 +24,15 @@ def train(config):
 	print(data.X.shape, data.Y.shape)
 	print(data.size, data.dim)
 
-	#gmm = GaussianMixtureModel(config, data)
-	#gmm.mahalanobis_distance(data.X, 0, 0)
-
-	X = np.array([[1, 2, 3],
-				  [4, 5, 6]])
-
-	mu = np.array([[1, 1, 1],
-				   [2, 2, 2],
-				   [3, 3, 3]])
-
-	sigma = np.array([
-		[[1, 0, 0],
-		 [0, 1, 0],
-		 [0, 0, 1]],
-		[[0.5, 0, 0],
-		 [0, 0.5, 0],
-		 [0, 0, 0.5]],
-		[[4, -1, 1],
-		 [-1, 4, -1],
-		 [1, -1, 4]]
-	])
-
-	gmixture_pdf = MultivariateGaussian()
-	prob = gmixture_pdf(X, mu, sigma)
+	#gaussian_pdf = MultivariateGaussian()
+	#prob = gaussian_pdf(X, mu, sigma)
 	#print(prob)
 
+	gmm = GaussianMixtureModel(config, data)
+	r = gmm.e_step()
+	print(r)
 
-
+	gmm.m_step(r)
 
 
 

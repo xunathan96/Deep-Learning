@@ -28,22 +28,22 @@ class MultivariateGaussian(object):
 	def pdf(self, x, mean, cov):
 
 		# calculate the mahalanobis distance of all point-cluster pairs
-		# delta is a tensor of shape N, K
+		# delta is a matrix of shape N, K
 		delta = self.mahalanobis_distance(x, mean, cov)
-		print(delta)
+		#print(delta)
 
 		# calculate the scaling constant of the gaussian pdf
 		# scale is a vector of shape K
 		scale = np.float_power(np.linalg.det(cov), -0.5)
-		print(scale)
+		#print(scale)
 
 		# calculate the inverse partition function of the gaussian pdf
 		Z = (2*np.pi)**(self.dim/2.)
-		print(Z)
+		#print(Z)
 
 		# calculate the probabilities of all point-cluster pairs
 		p = (1./Z) * scale * np.exp(-0.5*delta)
-		print(p)
+		#print(p)
 
 		return p
 
@@ -70,15 +70,17 @@ class MultivariateGaussian(object):
 
 		return dev
 
+
 	"""
-	dev has dimensions K, N, D
-	dev2col first calculates the tensor of co-deviation values of the form
-	[ (x_1-mu_1)(x_1-mu_1).T,  ...  (x_N-mu_1)(x_N-mu_1).T ]
-	which has dimensions K, N, D, D
-	then dev2col vectorizes/flattens the co-deviation matrix (last 2 dimensions)
-	to get a tensor of the form K, N, D*D
+	x has dimensions N, D
+	mean has dimensions K, D
+	The function returns all pairs of co-deviation matricies
+	(x_n - mu_k)(x_n - mu_k).T with dimensions K, N, D
 	"""
-	def dev2col(self, dev):
+	def calculate_co_deviation(self, x, mean):
+
+		# dev is a tensor of all deviation pairs and has dimensions K, N, D
+		dev = self.calculate_deviation(x, mean)
 
 		# add last dimension to make into 4D tensor of col vectors
 		# S has dimensions K, N, D, 1
@@ -88,35 +90,31 @@ class MultivariateGaussian(object):
 		# S_T has dimensions K, N, 1, D
 		S_T = np.transpose(S, (0,1,3,2))
 
-		# compute the resulting square matricies
+		# compute the resulting square co-deviation matrices of dim K, N, D, D
 		# [ (x_1-mu_1)(x_1-mu_1).T  ...  (x_N-mu)(x_N-mu_1).T ]
-		# res has dimensions K, N, D, D
-		res = S @ S_T
+		return S @ S_T
 
-		# flatten the square matricies to create a 3D tensor
-		# res has dimensions K, N, D*D
-		res = np.reshape(res, (*res.shape[:2],-1))
 
-		return res
+	"""
+	co_dev has dimensions K, N, D, D
+	dev2col vectorizes/flattens the co-deviation matrix (last 2 dimensions)
+	to get a tensor of the form K, N, D*D
+	"""
+	def dev2col(self, co_dev):
+		return np.reshape(co_dev, (*co_dev.shape[:2],-1))
 
 	"""
 	cov is a tensor of covariance matricies. It has dimension K, D, D
 	The function returns vectorized/flattened tensor of *precision* matricies
 	with dimension K, D*D, 1
 	"""
-	def cov2col(self, cov):
-		
+	def cov2col(self, cov):		
 		# linalg.inv is broadcastable and so we take the inverse of covariance tensor
 		precision = np.linalg.inv(cov)
 
-		# we flatten the last precision matrix and add a dimension to transform into 
+		# we flatten the precision matrix and add a dimension to transform into 
 		# a tensor of column vectors. The result has dimensions K, D*D, 1
-		precision_vec = np.expand_dims(
-			np.reshape(precision, (*precision.shape[:1],-1)),
-			axis=-1
-		)
-
-		return precision_vec
+		return np.expand_dims(np.reshape(precision, (*precision.shape[:1],-1)), axis=-1)
 
 
 	"""
@@ -129,20 +127,20 @@ class MultivariateGaussian(object):
 	"""
 	def mahalanobis_distance(self, x, mean, cov):
 
-		# dev is a tensor of all deviation pairs and has dimensions K, N, D
-		dev = self.calculate_deviation(x, mean)
+		# co_dev is a tensor of all deviation pairs and has dimensions K, N, D
+		co_dev = self.calculate_co_deviation(x, mean)
 
-		# co_deviations is a tensor of flattened/vectorized co-deviations and has 
+		# vectorized_co_dev is a tensor of flattened/vectorized co-deviations and has 
 		# dimensions K, N, D*D
-		co_deviations = self.dev2col(dev)
+		vectorized_co_dev = self.dev2col(co_dev)
 
 		# precision is a tensor of flattened/vectorized precision matricies and has 
 		# dimensions K, D*D, 1
-		precision = self.cov2col(cov)
+		vectorized_precision = self.cov2col(cov)
 
 		# we simply matrix multiply the two tensors to get a tensor of 
 		# responsibilities of dimensions K, N, 1
-		delta = co_deviations @ precision
+		delta = vectorized_co_dev @ vectorized_precision
 
 		# squeeze and transpose to convert the tensor into a matrix
 		delta = np.squeeze(delta, axis=-1).T
