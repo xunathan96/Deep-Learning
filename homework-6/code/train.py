@@ -30,6 +30,7 @@ def train(config):
 
 	gmm = GaussianMixtureModel(config, data)
 	r = gmm.e_step()
+	print("RESPONSIBILITIES")
 	print(r)
 
 	gmm.m_step(r)

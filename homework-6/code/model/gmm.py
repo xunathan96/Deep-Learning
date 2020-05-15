@@ -70,35 +70,53 @@ class GaussianMixtureModel(object):
 	Computes the M-Step for the GMM by maximizing the mixture parameters (pi, mean, cov)
 	this step takes the responsibilities matrix (N, K) as input
 	"""
-	def m_step(self, r):
+	def m_step(self, responsibilities):
 
 		# calculate the vector of effective number of points in each cluster N_k
-		effective_N = np.sum(r, axis=0, keepdims=True)
+		effective_N = np.sum(responsibilities, axis=0, keepdims=True)
 		print("N_K")
 		print(effective_N)
 
 		# update cluster priors and means
 		self.pi = effective_N / self.N
-		self.mean = (r.T @ self.x) / effective_N.T
+		self.mean = (responsibilities.T @ self.x) / effective_N.T
 		print("MEAN")
 		print(self.mean)
 
-		# update the covariance
-		#dev = self.gaussian.calculate_deviation(self.x, self.mean)
-		#S = np.expand_dims(dev, axis=-1)
-		#S_T = np.transpose(S, (0,1,3,2))
-		#delta = S @ S_T
-		#print(delta)
-
+		# co_dev has dim K, N, D, D
 		co_dev = self.gaussian.calculate_co_deviation(self.x, self.mean)
+		#print("CO-DEV")
+		#print(self.x[0])
+		#print(self.mean[2])
+		#print(co_dev[2,0])
 
-		cov = np.transpose(co_dev, (2,3,0,1)) @ r
-
-		cov = np.diagonal(cov, axis1=2, axis2=3)
-
-
+		eff_co_dev = np.transpose(co_dev, (2,3,0,1)) @ responsibilities
+		cov = np.diagonal(eff_co_dev, axis1=2, axis2=3) / effective_N
 		self.cov = np.transpose(cov, (2,0,1))
-		print(cov)
+		print("COVARIANCE")
+		print(self.cov[0])
+
+		#cov = self.vecMatrix_div_vecScalar(eff_co_dev, np.squeeze(effective_N))
+		#print("COV")
+		#print(cov[2])
+
+
+
+
+
+	"""
+	vecMatrix is a vector of matricies (K, H, W)
+	vecScalar is a vector of scalars (K)
+	The function divides every matrix in vecMatrix by the corresponding scalar
+	in vecScalar. Result has dimensions (K, H, W)
+	"""
+	def vecMatrix_div_vecScalar(self, vecMatrix, vecScalar):
+		# expand the dimensions of the vector by 2 to allow for broadcasting
+		vecScalar = vecScalar[:, np.newaxis, np.newaxis]
+		print(vecScalar)
+		return vecMatrix / vecScalar
+
+
 
 
 
