@@ -8,7 +8,7 @@ data:
 model:
     name: 'gmm'
     path: './cache/'
-    n_clusters: 3
+    n_clusters: 4
 
 optimizer:
     name: 'adam'

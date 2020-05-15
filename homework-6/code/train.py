@@ -11,10 +11,11 @@ def train(data, config):
 	gmm = GaussianMixtureModel(config, data.x)
 	gmm.initialize_EM()
 
-	for epoch in range(100):
+	for epoch in range(4000):
 		responsibilities = gmm.e_step()
 		pi, mean, cov = gmm.m_step(responsibilities)
 
+	print("class priors:", pi)
 	class_assignments = gmm.class_assignments()
 
 	return class_assignments, (pi, mean, cov)
