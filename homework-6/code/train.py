@@ -14,12 +14,7 @@ from model import GaussianMixtureModel
 from model import MultivariateGaussian
 
 def train(config):
-	"""	X = np.loadtxt(config.data.path, dtype='object', delimiter=',')
-	Y = X[:,-1]
-	X = X[:, :-1].astype('f')
-	print(X.shape, Y.shape, Y.dtype)
-	# ((150, 4), (150,), dtype('O'))
-	"""
+
 	data = IrisData(config.data.path)
 	print(data.X.shape, data.Y.shape)
 	print(data.size, data.dim)

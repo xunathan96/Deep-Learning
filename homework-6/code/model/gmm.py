@@ -73,35 +73,35 @@ class GaussianMixtureModel(object):
 	def m_step(self, responsibilities):
 
 		# calculate the vector of effective number of points in each cluster N_k
-		effective_N = np.sum(responsibilities, axis=0, keepdims=True)
-		print("N_K")
-		print(effective_N)
+		# effective_N has dimension (K)
+		effective_N = np.sum(responsibilities, axis=0)
+
+		#print("EFFECTIVE N")
+		#print(effective_N)
 
 		# update cluster priors and means
+		# self.pi has dimension (K)
+		# self.mean has dimension (K, D)
 		self.pi = effective_N / self.N
-		self.mean = (responsibilities.T @ self.x) / effective_N.T
-		print("MEAN")
-		print(self.mean)
+		self.mean = (responsibilities.T @ self.x) / effective_N.T[:, np.newaxis]
 
-		# co_dev has dim K, N, D, D
+		#print("MEAN")
+		#print(self.mean)
+
+		# co_dev is the tensor of co-deviation matricies (xi-uj)(xi-uj).T 
+		# and has dim (K, N, D, D)
 		co_dev = self.gaussian.calculate_co_deviation(self.x, self.mean)
-		#print("CO-DEV")
-		#print(self.x[0])
-		#print(self.mean[2])
-		#print(co_dev[2,0])
 
+		# calculate the covariance matrices for each class
+		# self.cov has dimension (K, D, D)
 		eff_co_dev = np.transpose(co_dev, (2,3,0,1)) @ responsibilities
 		cov = np.diagonal(eff_co_dev, axis1=2, axis2=3) / effective_N
 		self.cov = np.transpose(cov, (2,0,1))
-		print("COVARIANCE")
-		print(self.cov[0])
 
-		#cov = self.vecMatrix_div_vecScalar(eff_co_dev, np.squeeze(effective_N))
-		#print("COV")
-		#print(cov[2])
+		#print("COVARIANCE")
+		#print(self.cov)
 
-
-
+		return self.pi, self.mean, self.cov
 
 
 	"""
