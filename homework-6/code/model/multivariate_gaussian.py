@@ -16,6 +16,12 @@ class MultivariateGaussian(object):
 		
 	def __call__(self, x, mean, cov):
 		self.n_clusters, self.dim = mean.shape
+		(N, D) = x.shape
+		(K, _D, _D) = cov.shape
+
+		assert (D == self.dim) and (_D == self.dim)
+		assert K == self.n_clusters
+
 		return self.pdf(x, mean, cov)
 
 	"""
@@ -35,7 +41,6 @@ class MultivariateGaussian(object):
 		# calculate the scaling constant of the gaussian pdf
 		# scale is a vector of shape K
 		scale = np.float_power(np.linalg.det(cov), -0.5)
-		#print(scale)
 
 		# calculate the inverse partition function of the gaussian pdf
 		Z = (2*np.pi)**(self.dim/2.)
@@ -108,10 +113,9 @@ class MultivariateGaussian(object):
 	The function returns vectorized/flattened tensor of *precision* matricies
 	with dimension K, D*D, 1
 	"""
-	def cov2col(self, cov):		
-		# linalg.inv is broadcastable and so we take the inverse of covariance tensor
-		precision = np.linalg.inv(cov)
-
+	def cov2col(self, cov):
+		# pinv() is broadcastable and so we take the pseudo-inv of covariance tensor
+		precision = np.linalg.pinv(cov)
 		# we flatten the precision matrix and add a dimension to transform into 
 		# a tensor of column vectors. The result has dimensions K, D*D, 1
 		return np.expand_dims(np.reshape(precision, (*precision.shape[:1],-1)), axis=-1)

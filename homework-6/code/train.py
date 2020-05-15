@@ -24,11 +24,25 @@ def train(config):
 	#print(prob)
 
 	gmm = GaussianMixtureModel(config, data)
-	r = gmm.e_step()
-	print("RESPONSIBILITIES")
-	print(r)
 
-	gmm.m_step(r)
+	for epoch in range(4):
+		print("EPOCH: ", epoch)
+
+		r = gmm.e_step()
+		print("RESPONSIBILITIES")
+		print(r)
+
+		pi, mean, cov = gmm.m_step(r)
+		print("PI")
+		print(pi)
+		print("MEAN")
+		print(mean)
+		print("COVARIANCE")
+		print(cov)
+
+
+
+
 
 
 

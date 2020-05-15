@@ -15,15 +15,21 @@ class GaussianMixtureModel(object):
 		self.t = data.Y		# t is a N vector of class labels
 		(self.N, self.D) = self.x.shape
 
+		self.x = np.array([[0, 0, 0],
+					  	   [5, 5, 5],
+					  	   [-5, -5, -5]])
+		(self.N, self.D) = self.x.shape
+
 		# initializing mixture parameters
 		# pi has shape (K)
 		# mean has shape (K, D)
 		# cov has shape (K, D, D)
 		self.pi = (1./self.n_clusters) * np.ones(self.n_clusters)
 		self.mean = self.x[np.random.choice(self.N, self.n_clusters, replace=False)]
-		self.cov = [np.eye(self.D)] * self.n_clusters
+		cov = np.expand_dims(np.eye(self.D), axis=0)
+		self.cov = np.tile(cov, (self.n_clusters, 1, 1))
 
-
+		"""
 		self.x = np.array([[1, 2, 3],
 					  [4, 5, 6]])
 		(self.N, self.D) = self.x.shape
@@ -43,6 +49,11 @@ class GaussianMixtureModel(object):
 			 [-1, 4, -1],
 			 [1, -1, 4]]
 		])
+		"""
+
+	def initialize_EM():
+		pass
+
 
 	"""
 	Computes the E-Step for the GMM by computing the responsibilities matrix R
@@ -96,7 +107,10 @@ class GaussianMixtureModel(object):
 		# self.cov has dimension (K, D, D)
 		eff_co_dev = np.transpose(co_dev, (2,3,0,1)) @ responsibilities
 		cov = np.diagonal(eff_co_dev, axis1=2, axis2=3) / effective_N
-		self.cov = np.transpose(cov, (2,0,1))
+		
+		# add small noise to prevent singular matricies
+		eps = 1e-10* np.eye(self.D)
+		self.cov = np.transpose(cov, (2,0,1)) + eps
 
 		#print("COVARIANCE")
 		#print(self.cov)
