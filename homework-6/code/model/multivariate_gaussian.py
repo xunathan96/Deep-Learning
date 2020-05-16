@@ -80,7 +80,7 @@ class MultivariateGaussian(object):
 	x has dimensions N, D
 	mean has dimensions K, D
 	The function returns all pairs of co-deviation matricies
-	(x_n - mu_k)(x_n - mu_k).T with dimensions K, N, D
+	(x_n - mu_k)(x_n - mu_k).T with dimensions K, N, D, D
 	"""
 	def calculate_co_deviation(self, x, mean):
 

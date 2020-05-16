@@ -13,3 +13,5 @@ Homework 3 -- MNIST Classification with ConvNet
 Homework 4 -- MNIST Classification on PyTorch
 
 Homework 5 -- Sentence-level Sentiment Classification
+
+Homework 6 -- EM Algorithm for Mixture of Gaussians. *(Although not required, I have implemented a fully vectorized EM with no loops)
